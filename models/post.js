@@ -30,7 +30,7 @@ const postSchema = new Schema({
     required: true
   },
   requiredPeople: {
-    type: Integer,
+    type: Number,
     required: true
   },
   remarks: {

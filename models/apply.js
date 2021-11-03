@@ -7,8 +7,14 @@ const applySchema = new Schema({
     index: true,
     requires: true
   },
+  postId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Post',
+    index: true,
+    requires: true
+  },
   numberOfPeople: {
-    type: Integer,
+    type: Number,
     required: true
   },
   remarks: {
