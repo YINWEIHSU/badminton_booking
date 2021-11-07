@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./server/bin/www",
     "dev": "nodemon ./server/app.js",
-    "seed": "node models/seeds/userSeeder.js && node models/seeds/courtSeeder.js && node models/seeds/postSeeder.js && node models/seeds/applySeeder.js"
+    "seed": "node server/models/seeds/userSeeder.js && node server/models/seeds/courtSeeder.js && node server/models/seeds/postSeeder.js && node server/models/seeds/applySeeder.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
