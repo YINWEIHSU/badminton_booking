@@ -4,7 +4,7 @@ const Court = require('../models/court')
 const PostController = {
   postPost: async (req, res) => {
     try {
-      const { date, startTime, endTime, Cost, requiredPeople, remarks } = req.body
+      const { date, startTime, endTime, cost, requiredPeople, remarks } = req.body
       const court = await Court.findOne({ name: req.body.court })
       const courtId = court._id
       await Post.create({
@@ -13,7 +13,7 @@ const PostController = {
         date,
         startTime,
         endTime,
-        Cost,
+        cost,
         requiredPeople,
         remarks,
       })
@@ -44,7 +44,7 @@ const PostController = {
   putPost: async (req, res) => {
     try {
       const id = req.params.id
-      const { date, startTime, endTime, Cost, requiredPeople, remarks } = req.body
+      const { date, startTime, endTime, cost, requiredPeople, remarks } = req.body
       const court = await Court.findOne({ name: req.body.court })
       const courtId = court._id
 
@@ -53,7 +53,7 @@ const PostController = {
       post.date = date
       post.startTime = startTime
       post.endTime = endTime
-      post.Cost = Cost
+      post.cost = cost
       post.requiredPeople = requiredPeople
       post.remarks = remarks
       post.save()

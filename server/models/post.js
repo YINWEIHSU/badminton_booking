@@ -25,7 +25,7 @@ const postSchema = new Schema({
     type: String,
     required: true
   },
-  Cost: {
+  cost: {
     type: Number,
     required: true
   },

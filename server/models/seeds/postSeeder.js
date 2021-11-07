@@ -18,7 +18,7 @@ db.once('open', async () => {
     date: '10/11',
     startTime: '10:00',
     endTime: '11:00',
-    Cost: 200,
+    cost: 200,
     requiredPeople: 4,
     remarks: '限中級',
   })
