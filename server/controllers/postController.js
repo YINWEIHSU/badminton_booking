@@ -1,16 +1,70 @@
-const POSTController = {
-  postPost: (req, res) => {
+const Post = require('../models/post')
+const Court = require('../models/court')
 
+const PostController = {
+  postPost: async (req, res) => {
+    try {
+      const { date, startTime, endTime, Cost, requiredPeople, remarks } = req.body
+      const court = await Court.findOne({ name: req.body.court })
+      const courtId = court._id
+      await Post.create({
+        userId: '6182ade1e0e7a001064d2ba1',
+        courtId,
+        date,
+        startTime,
+        endTime,
+        Cost,
+        requiredPeople,
+        remarks,
+      })
+      return res.json({ message: 'Successfully created' })
+    } catch (err) {
+      console.log(err)
+      return res.json({ message: 'Internal Server Error' })
+    }
   },
   getPosts: (req, res) => {
-    res.send('getPosts')
+    Post.find()
+      .then(posts => {
+        return res.json(posts)
+      })
+      .catch(err => {
+        console.log(err)
+        return res.json({ message: 'Internal Server Error' })
+      })
   },
   getPost: (req, res) => {
-    res.send('getPost')
+    Post.findById(req.params.id).then(post => {
+      return res.json(post)
+    }).catch(err => {
+      console.log(err)
+      return res.json({ message: 'Internal Server Error' })
+    })
   },
-  putPost: (req, res) => {
+  putPost: async (req, res) => {
+    try {
+      const id = req.params.id
+      const { date, startTime, endTime, Cost, requiredPeople, remarks } = req.body
+      const court = await Court.findOne({ name: req.body.court })
+      const courtId = court._id
+
+      const post = await Post.findById(id)
+      post.courtId = courtId
+      post.date = date
+      post.startTime = startTime
+      post.endTime = endTime
+      post.Cost = Cost
+      post.requiredPeople = requiredPeople
+      post.remarks = remarks
+      post.save()
+
+      return res.json({ message: 'Successfully updated' })
+    } catch (err) {
+      console.log(err)
+      return res.json({ message: 'Internal Server Error' })
+    }
 
   }
 }
 
-module.exports = POSTController
+module.exports = PostController
