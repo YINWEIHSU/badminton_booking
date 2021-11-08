@@ -1,6 +1,7 @@
 const Post = require('../models/post')
 const User = require('../models/user')
 const Apply = require('../models/apply')
+const bcrypt = require('bcryptjs')
 
 const userController = {
   signUp: async (req, res) => {
@@ -20,7 +21,7 @@ const userController = {
       await User.create({
         name,
         email,
-        password
+        password: bcrypt.hashSync(password, bcrypt.genSaltSync(10), null)
       })
       return res.json({ status: 'success', message: 'User was successfully registered' })
     } catch (err) {
@@ -35,11 +36,11 @@ const userController = {
       }
 
       const { email, password } = req.body
-      const user = await User.findOne({email: email })
+      const user = await User.findOne({ email: email })
 
       if (!user) return res.json({ message: "user not found" })
 
-      if (password !== user.password) return res.json({ message: "password is not correct" })
+      if (!bcrypt.compareSync(password, user.password)) return res.json({ message: "password is not correct" })
 
       res.json({
         status: 'success',
