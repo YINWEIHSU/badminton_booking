@@ -9,7 +9,7 @@ db.once('open', () => {
   console.log('mongodb connected!')
   User.create({
     name: 'user1',
-    nikeName: 'USER1',
+    nickname: 'USER1',
     phone: '0912345678',
     lineId: 'user1LineID',
     email: 'user1@example.com',
@@ -17,7 +17,7 @@ db.once('open', () => {
   },
     {
       name: 'group1',
-      nikeName: 'GROUP1',
+      nickname: 'GROUP1',
       phone: '0987654321',
       lineId: 'group1LineID',
       email: 'group1@example.com',

@@ -5,7 +5,7 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  nikeName: {
+  nickname: {
     type: String,
   },
   phone: {
