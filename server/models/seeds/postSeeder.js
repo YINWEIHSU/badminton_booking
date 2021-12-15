@@ -1,13 +1,8 @@
-const mongoose = require('mongoose')
 const Post = require('../post')
 const User = require('../user')
 const Court = require('../court')
+const db = require('../../../config/mongoose')
 
-mongoose.connect('mongodb://127.0.0.1/badminton-booking', { useNewUrlParser: true, useUnifiedTopology: true })
-const db = mongoose.connection
-db.on('error', () => {
-  console.log('mongodb error!')
-})
 db.once('open', async () => {
   console.log('mongodb connected!')
   const user = await User.findOne({ name: 'group1' })
@@ -26,6 +21,6 @@ db.once('open', async () => {
   console.log('Post seeds insert completed!')
 
   console.log('database connection closed...')
-  process.exit()
+  process.exit(0)
 
 })

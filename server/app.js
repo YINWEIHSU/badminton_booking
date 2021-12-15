@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const mongoose = require('mongoose')
+require('../config/mongoose')
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -11,19 +11,6 @@ const apisRouter = require('./routes/apis')
 
 const app = express();
 const PORT = 3000
-
-mongoose.connect('mongodb://127.0.0.1/badminton-booking', { useNewUrlParser: true, useUnifiedTopology: true })
-
-// 取得資料庫連線狀態
-const db = mongoose.connection
-// 連線異常
-db.on('error', () => {
-  console.log('mongodb error!')
-})
-// 連線成功
-db.once('open', () => {
-  console.log('mongodb connected!')
-})
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
