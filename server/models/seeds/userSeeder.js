@@ -1,15 +1,10 @@
-const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const User = require('../user')
-mongoose.connect('mongodb://127.0.0.1/badminton-booking', { useNewUrlParser: true, useUnifiedTopology: true })
-const db = mongoose.connection
+const db = require('../../../config/mongoose')
 
-db.on('error', () => {
-  console.log('mongodb error!')
-})
-db.once('open', () => {
+db.once('open', async () => {
   console.log('mongodb connected!')
-  User.create({
+  await User.create({
     name: 'user1',
     nickname: 'USER1',
     phone: '0912345678',
@@ -25,10 +20,10 @@ db.once('open', () => {
       email: 'group1@example.com',
       password: bcrypt.hashSync('12345678', bcrypt.genSaltSync(10), null),
       isGroup: true,
-    }).then(() => {
-      console.log('User seeds insert completed!')
-      console.log('database connection closed...')
-      process.exit()
     })
+
+  console.log('User seeds insert completed!')
+  console.log('database connection closed...')
+  process.exit(0)
 
 })
