@@ -1,5 +1,7 @@
 const { Post, User, Apply } = require('../models')
 const bcrypt = require('bcryptjs')
+const { jwtUtil } = require('../../utils/jwtUtil')
+const { request } = require('express')
 
 const userController = {
   signUp: async (req, res) => {
@@ -45,12 +47,7 @@ const userController = {
       res.json({
         status: 'success',
         message: 'ok',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          nickname: user.nickname
-        }
+        token: jwtUtil.generateJWT(user.id)
       })
     } catch (err) {
       console.trace(err)

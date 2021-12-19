@@ -1,5 +1,10 @@
 const express = require('express')
 const router = express.Router()
+const authUtil = require('../../utils/authUtil')
+
+const authenticated = (req, res, next) => {
+  return authUtil.authenticated(req, res, next)
+}
 
 const applyController = require('../controllers/applyController')
 const userController = require('../controllers/userController')
@@ -10,7 +15,7 @@ router.post('/users', userController.signUp)
 router.post('/users/signin', userController.signIn)
 router.get('/users/:id/posts', userController.getUserPosts)
 router.get('/users/:id/applies', userController.getUserApplies)
-router.get('/users/:id', userController.getUser)
+router.get('/users/:id', authenticated, userController.getUser)
 router.put('/users/:id', userController.putUser)
 
 // post

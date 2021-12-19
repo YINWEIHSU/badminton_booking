@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -5,7 +9,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 require('../config/mongoose')
 global._ = require('lodash')
-
 
 const app = express();
 const PORT = process.env.PORT || 3000
