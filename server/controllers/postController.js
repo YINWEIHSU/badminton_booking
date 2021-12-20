@@ -1,10 +1,9 @@
-const Post = require('../models/post')
-const Court = require('../models/court')
+const { Post, Court } = require('../models')
 
 const PostController = {
   postPost: async (req, res) => {
+    const { date, startTime, endTime, cost, requiredPeople, remarks } = req.body
     try {
-      const { date, startTime, endTime, cost, requiredPeople, remarks } = req.body
       const court = await Court.findOne({ name: req.body.court })
       const courtId = court._id
       await Post.create({
@@ -19,48 +18,44 @@ const PostController = {
       })
       return res.json({ message: 'Successfully created' })
     } catch (err) {
-      console.log(err)
+      console.trace(err)
       return res.json({ message: 'Internal Server Error' })
     }
   },
-  getPosts: (req, res) => {
-    Post.find()
-      .then(posts => {
-        return res.json(posts)
-      })
-      .catch(err => {
-        console.log(err)
-        return res.json({ message: 'Internal Server Error' })
-      })
-  },
-  getPost: (req, res) => {
-    Post.findById(req.params.id).then(post => {
-      return res.json(post)
-    }).catch(err => {
-      console.log(err)
+  getPosts: async (req, res) => {
+    try {
+      const posts = await Post.find()
+      return res.json(posts)
+    } catch (err) {
+      console.trace(err)
       return res.json({ message: 'Internal Server Error' })
-    })
+    }
+  },
+  getPost: async (req, res) => {
+    const { id } = req.params
+    try {
+      const post = await Post.findById(id)
+      if (!post) return res.json({ message: "post not found" })
+
+      return res.json(post)
+    } catch (err) {
+      console.trace(err)
+      return res.json({ message: 'Internal Server Error' })
+    }
   },
   putPost: async (req, res) => {
+    const { id } = req.params
     try {
-      const id = req.params.id
-      const { date, startTime, endTime, cost, requiredPeople, remarks } = req.body
       const court = await Court.findOne({ name: req.body.court })
       const courtId = court._id
 
-      const post = await Post.findById(id)
+      let post = await Post.findById(id)
       post.courtId = courtId
-      post.date = date
-      post.startTime = startTime
-      post.endTime = endTime
-      post.cost = cost
-      post.requiredPeople = requiredPeople
-      post.remarks = remarks
+      post = _.merge(post, { ...req.body })
       post.save()
-
       return res.json({ message: 'Successfully updated' })
     } catch (err) {
-      console.log(err)
+      console.trace(err)
       return res.json({ message: 'Internal Server Error' })
     }
 

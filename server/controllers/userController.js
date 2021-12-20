@@ -1,22 +1,25 @@
-const Post = require('../models/post')
-const User = require('../models/user')
-const Apply = require('../models/apply')
+const { Post, User, Apply } = require('../models')
 const bcrypt = require('bcryptjs')
+const { jwtUtil } = require('../../utils/jwtUtil')
+const { request } = require('express')
 
 const userController = {
   signUp: async (req, res) => {
-    try {
-      if (!req.body.email || !req.body.name || !req.body.password || !req.body.checkPassword) {
-        return res.json({ message: 'input cannot be blank' })
-      }
-      if (req.body.checkPassword !== req.body.password) {
-        return res.json({ message: 'Password is different' })
-      }
+    const { email, name, password, checkPassword } = req.body
 
-      const user = await User.findOne({ email: req.body.email })
+    if (!email || !name || !password || !checkPassword) {
+      return res.json({ message: 'input cannot be blank' })
+    }
+
+    if (checkPassword !== password) {
+      return res.json({ message: 'Password is different' })
+    }
+
+    try {
+      const user = await User.findOne({ email })
       if (user) return res.json({ message: 'Email is already exists', })
 
-      const { name, email, password } = req.body
+      // const { name, email, password } = req.body
 
       await User.create({
         name,
@@ -25,85 +28,83 @@ const userController = {
       })
       return res.json({ status: 'success', message: 'User was successfully registered' })
     } catch (err) {
-      console.log(err)
+      console.trace(err)
       return res.json({ message: 'Internal Server Error' })
     }
   },
   signIn: async (req, res) => {
+    const { email, password } = req.body
+
+    if (!email || !password) {
+      return res.json({ message: "required fields didn't exist" })
+    }
+
     try {
-      if (!req.body.email || !req.body.password) {
-        return res.json({ message: "required fields didn't exist" })
-      }
-
-      const { email, password } = req.body
-      const user = await User.findOne({ email: email })
-
+      const user = await User.findOne({ email })
       if (!user) return res.json({ message: "user not found" })
-
       if (!bcrypt.compareSync(password, user.password)) return res.json({ message: "password is not correct" })
 
       res.json({
         status: 'success',
         message: 'ok',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          nickname: user.nickname
-        }
+        token: jwtUtil.generateJWT(user.id)
       })
     } catch (err) {
-      console.log(err)
+      console.trace(err)
       res.json({ message: 'Internal Server Error' })
     }
   },
-  getUserPosts: (req, res) => {
-    Post.find({ userId: req.params.id })
-      .then(posts => {
-        return res.json(posts)
-      })
-      .catch(err => {
-        console.log(err)
-        return res.json({ message: 'Internal Server Error' })
-      })
+  getUserPosts: async (req, res) => {
+    const { id } = req.params
+
+    try {
+      const post = await Post.find({ userId: id })
+      if (!post) return res.json({ message: "post not found" })
+
+      return res.json(post)
+    } catch (err) {
+      console.trace(err)
+      return res.json({ message: 'Internal Server Error' })
+    }
   },
-  getUserApplies: (req, res) => {
-    Apply.find({ userId: req.params.id })
-      .then(replies => {
-        return res.json(replies)
-      })
-      .catch(err => {
-        console.log(err)
-        return res.json({ message: 'Internal Server Error' })
-      })
+  getUserApplies: async (req, res) => {
+    const { id } = req.params
+
+    try {
+      const reply = await Apply.find({ userId: id })
+      if (!reply) return res.json({ message: "reply not found" })
+
+      return res.json(reply)
+    } catch (err) {
+      console.trace(err)
+      return res.json({ message: 'Internal Server Error' })
+    }
   },
-  getUser: (req, res) => {
-    User.findById(req.params.id)
-      .then(user => {
-        return res.json(user)
-      })
-      .catch(err => {
-        console.log(err)
-        return res.json({ message: 'Internal Server Error' })
-      })
+  getUser: async (req, res) => {
+    const { id } = req.params
+    try {
+      const user = await User.findById(id)
+      if (!user) return res.json({ message: "user not found" })
+
+      return res.json(user)
+    } catch (err) {
+      console.trace(err)
+      return res.json({ message: 'Internal Server Error' })
+    }
   },
-  putUser: (req, res) => {
-    User.findById(req.params.id)
-      .then(user => {
-        const { test, name, nickname, phone, lineId, email, password } = req.body
-        user.name = name || user.name
-        user.nickname = nickname || user.nickname
-        user.phone = phone || user.phone
-        user.lineId = lineId || user.lineId
-        user.email = email || user.email
-        user.password = password || user.password
-        user.save()
-        return res.json(user)
-      })
-      .catch(err => {
-        console.log(err)
-        return res.json({ message: 'Internal Server Error' })
-      })
+  putUser: async (req, res) => {
+    const { id } = req.params
+    try {
+      let user = await User.findById(id)
+      if (!user) return res.json({ message: "user not found" })
+
+      user = _.merge(user, { ...req.body })
+      user.save()
+      return res.json(user)
+    } catch (err) {
+      console.trace(err)
+      return res.json({ message: 'Internal Server Error' })
+    }
   }
 }
 

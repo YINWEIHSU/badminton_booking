@@ -1,15 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const Post = require('../models/post')
+const apis = require('./apis')
 
-/* GET home page. */
-router.get('/', (req, res, next) => {
-  Post.find()
-    .lean()
-    .then(posts => {
-      res.send(posts)
-    })
-    .catch(err => console.log(err))
-});
+module.exports = (app) => {
+  app.use('/api', apis)
+}
 
-module.exports = router;
