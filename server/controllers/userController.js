@@ -1,7 +1,7 @@
 const { Post, User, Apply } = require('../models')
 const bcrypt = require('bcryptjs')
 const { jwtUtil } = require('../../utils/jwtUtil')
-const { request } = require('express')
+const { redisUtils } = require('../../utils/redisUtil')
 
 const userController = {
   signUp: async (req, res) => {
@@ -18,8 +18,6 @@ const userController = {
     try {
       const user = await User.findOne({ email })
       if (user) return res.json({ message: 'Email is already exists', })
-
-      // const { name, email, password } = req.body
 
       await User.create({
         name,
@@ -43,11 +41,14 @@ const userController = {
       const user = await User.findOne({ email })
       if (!user) return res.json({ message: "user not found" })
       if (!bcrypt.compareSync(password, user.password)) return res.json({ message: "password is not correct" })
+      const token = jwtUtil.generateJWT(user.id)
+      //目前設定保留5分鐘
+      await redisUtils.setCaches('token', token, 60 * 5)
 
       res.json({
         status: 'success',
         message: 'ok',
-        token: jwtUtil.generateJWT(user.id)
+        token
       })
     } catch (err) {
       console.trace(err)
